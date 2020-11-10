@@ -38,10 +38,12 @@ body {
   padding: 20px;
 }
 .board {
+  position: relative;
   height: 500px;
   width: 500px;
   font-size: 0;
   display: inline-block;
+  overflow: hidden;
 }
 .cell {
   position: relative;
@@ -60,4 +62,43 @@ body {
   transform: translate(-50%, -50%);
   font-size: 50px;
   color: #fff;
+}
+
+.game-result {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(100%);
+  background-color: #14bdac;
+  transition: 0.5s transform;
+}
+
+.game-result.open {
+  transform: translateY(0);
+}
+
+.winning-text {
+  font-size: 40px;
+  color: #fff;
+  position: absolute;
+  top:0;
+  left: 50%;
+  transform: translate(-50%, 120%);
+}
+
+.restart-button {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 25px;
+  color: #fff;
+  cursor: pointer;
+  vertical-align: middle;
+  padding: 20px 60px;
+  background-color: #229186;
+  border-radius: 20px;
 }

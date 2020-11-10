@@ -1,21 +1,30 @@
 import {getNextMoveByBot} from './bot.js'
-const board = {}
-const openTiles = {
-  "00": true,
-  "01": true,
-  "02": true,
-  "10": true,
-  "11": true,
-  "12": true,
-  "20": true,
-  "21": true,
-  "22": true
-}
-const boardUIElements = {}
+let containerDiv = null
+let board
+let openTiles
+let boardUIElements
+let gameResultScreen
+let playerSymbol
+let botSymbol
+let turn
+// let board = {}
+// let openTiles = {
+//   "00": true,
+//   "01": true,
+//   "02": true,
+//   "10": true,
+//   "11": true,
+//   "12": true,
+//   "20": true,
+//   "21": true,
+//   "22": true
+// }
+// let boardUIElements = {}
+// let gameResultScreen = null
+// let playerSymbol = ''
+// let botSymbol = ''
+// let turn = ''
 
-let playerSymbol = ''
-let botSymbol = ''
-let turn = ''
 function getGameStatus(board) {
   const result = {
     isOver: false,
@@ -24,7 +33,6 @@ function getGameStatus(board) {
   //Horizontal
   for (let i = 0; i < 3; i++) {
     if (board[`${i}0`] && 
-        board[`${i}1`] && 
         board[`${i}1`] && 
         board[`${i}2`] && 
         board[`${i}0`] === board[`${i}1`] && 
@@ -37,8 +45,7 @@ function getGameStatus(board) {
 
   //Vertical
   for (let i = 0; i < 3; i++) {
-    if (board[`0${i}`] && 
-        board[`1${i}`] && 
+    if (board[`0${i}`] &&
         board[`1${i}`] && 
         board[`2${i}`] && 
         board[`0${i}`] === board[`1${i}`] && 
@@ -80,6 +87,10 @@ function getGameStatus(board) {
 }
 export function renderBoard(parentElement) {
 
+  initializeGameVariables()
+  containerDiv = parentElement
+  removeAllChild(parentElement)
+
   const boardUI = document.createElement('div')
   boardUI.addEventListener('click', handlePlayersTileSelection)
   boardUI.setAttribute('class', 'board')
@@ -93,11 +104,59 @@ export function renderBoard(parentElement) {
       boardUI.appendChild(cell)
     }
   }
+  boardUI.appendChild(createGameResultScreen())
+  
   const gameContainer = document.createElement('div')
   gameContainer.setAttribute('class', 'game-container')
   gameContainer.appendChild(createPlayerSelector(handleSymbolSelection))
   gameContainer.appendChild(boardUI)
   parentElement.appendChild(gameContainer)
+}
+function removeAllChild(node) {
+  while (node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
+}
+function createGameResultScreen() {
+  gameResultScreen = document.createElement('div')
+  gameResultScreen.setAttribute('class', 'game-result')
+  return gameResultScreen
+}
+function initializeGameVariables() {
+  board = {}
+  openTiles = {
+    "00": true,
+    "01": true,
+    "02": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "20": true,
+    "21": true,
+    "22": true
+  }
+  boardUIElements = {}
+  gameResultScreen = null
+  playerSymbol = ''
+  botSymbol = ''
+  turn = ''
+}
+function restartGame() {
+  renderBoard(containerDiv)
+}
+function displayGameResult(winner) {
+  const winningText = winner ? `${winner} won` : 'Its a draw'
+  const text = createTextElement(winningText, 'winning-text')
+  gameResultScreen.appendChild(text)
+  
+  const restartButton = document.createElement('div')
+  restartButton.setAttribute('class', 'restart-button')
+  restartButton.addEventListener('click', restartGame)
+  const restartButtonText = createTextElement('Restart', 'restart-text')
+  restartButton.appendChild(restartButtonText)
+  gameResultScreen.appendChild(restartButton)
+
+  gameResultScreen.classList.add('open')
 }
 function createPlayerSelector(onSelection) {
   const container = document.createElement('div')
@@ -140,20 +199,18 @@ function markAndEvaluateBotSelection() {
   if (turn === botSymbol) {
     setTimeout(() => {
       const selection = getNextMoveByBot(board, openTiles, botSymbol, playerSymbol)
-      // board[`${selection.row}${selection.column}`] = botSymbol
-      // boardUIElements[`${selection.row}${selection.column}`].appendChild(createTextElement(botSymbol, 'mark'))
       updateBoard(selection, botSymbol)
-      // toggleTurn()
       const gameStatus = getGameStatus(board)
       if (gameStatus.isOver) {
-        if (gameStatus.winner) {
-          alert(gameStatus.winner + "won")
-        } else {
-          alert("Its a draw")
-        }
+        displayWinner(gameStatus.winner)
       }
     }, 1000)
   }
+}
+function displayWinner(winner) {
+  setTimeout(()=>{
+    displayGameResult(winner)
+  }, 0)
 }
 function updateBoard(selection, symbol) {
   const {row, column} = selection
@@ -173,14 +230,9 @@ function handlePlayersTileSelection(event) {
     const row = target.dataset.row
     const column = target.dataset.column
     updateBoard({row, column}, playerSymbol)
-    // toggleTurn()
     const gameStatus = getGameStatus(board)
     if (gameStatus.isOver) {
-      if (gameStatus.winner) {
-        alert(gameStatus.winner + " won")
-      } else {
-        alert("Its a draw")
-      }
+      displayWinner(gameStatus.winner)
     } else {
       markAndEvaluateBotSelection()
     }
