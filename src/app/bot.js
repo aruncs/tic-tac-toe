@@ -13,23 +13,21 @@ function getRandomMoveByBot(board, openTiles) {
   }
 }
 export function getNextMoveByBot(board, openTiles, botSymbol, playerSymbol) {
-  //Can I win
+  
   let nextMove
-
+  //can I win
   nextMove = getWinningMove(board, botSymbol)
   if (nextMove) {
     return nextMove
   }
 
   //Is opponent winning
-  
   nextMove = getBlockingMove(board, playerSymbol)
   if (nextMove) {
     return nextMove
   }
 
   return getRandomMoveByBot(board, openTiles)
-  // Check whether opponent is about to win
 
 }
 
