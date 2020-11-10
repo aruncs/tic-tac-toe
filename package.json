@@ -6,7 +6,8 @@
   "license": "MIT",
   "author": "Arun C S",
   "scripts": {
-    "start-server": "node ./src/server/index.js"
+    "start-server": "node ./src/server/index.js",
+    "start": "node ./src/server/index.js"
   },
   "engines": {
     "node": "8.9"
