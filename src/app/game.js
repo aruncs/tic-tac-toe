@@ -74,7 +74,7 @@ function getGameStatus(board) {
       board['02'] === board['11'] && 
       board['11'] === board['20']) {
     result.isOver = true
-    result.winner = board['00']
+    result.winner = board['02']
     return result
   }
 
